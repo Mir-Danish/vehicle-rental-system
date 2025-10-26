@@ -39,21 +39,21 @@ print("Database are shown here")'''
 
 
 def create_tables():
-    conn = connect_db()
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS vehicles (
+    connect_db = connect_db()
+    cursor = connect_db.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS vehicles (
         vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
         type VARCHAR(50),
         model VARCHAR(100),
         rent_per_day FLOAT,
         available VARCHAR(10)
     )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS customers (
+    cursor.execute('''CREATE TABLE IF NOT EXISTS customers (
         customer_id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
         phone VARCHAR(20)
     )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS rentals (
+    cursor.execute('''CREATE TABLE IF NOT EXISTS rentals (
         rental_id INT AUTO_INCREMENT PRIMARY KEY,
         vehicle_id INT,
         customer_id INT,
@@ -62,8 +62,8 @@ def create_tables():
         FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id),
         FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
     )''')
-    conn.commit()
-    conn.close()
+    connect_db.commit()
+    connect_db.close()
 
 
 def open_rent_car():
@@ -92,7 +92,7 @@ def open_rent_car():
             messagebox.showerror("Error", "All fields are required")
             return
 
-        connecttodb = connectdb.cursor()
+        connecttodb = connect_db.cursor()
         connecttodb.execute("INSERT INTO vehicles (type, model, rent_per_day, available) VALUES (%s, %s, %s, 'Yes')",(vtype, model, rent))
         connecttodb.commit()
         connecttodb.close()
@@ -123,7 +123,7 @@ def view_vehicles():
 
    
 
-    connecttodb = connectdb.cursor()
+    connecttodb = connect_db.cursor()
     connecttodb.execute("SELECT * FROM vehicles")
     for row in connecttodb.fetchall():
         tree.insert("",tk.END, values=row)
@@ -166,7 +166,7 @@ def rent_vehicle_window():
 
 
 
-        connecttodb = connectdb.cursor()
+        connecttodb = connect_db.cursor()
         # Check availability
         connecttodb.execute("SELECT available FROM vehicles WHERE vehicle_id=%s", (vid,))
         row = connecttodb.fetchone()
@@ -209,7 +209,7 @@ def return_vehicle_window():
 
 
         #conn = connect_db()
-        connecttodb = connectdb.cursor()
+        connecttodb = connect_db.cursor()
         connecttodb.execute("SELECT vehicle_id FROM rentals WHERE rental_id=%s", (rid,))
         row = connecttodb.fetchone()
         if not row:
@@ -237,7 +237,7 @@ w = Label(root, text="Vehicle Rental System", font=("Arial",16,"bold"))
 w.pack(pady=20)
 
 
-b1 = Button(root, text="Add Vehicle",bg="red", fg="white", activeforeground="blue", activebackground="blue",command=open_rent_car, width=20, height=2)
+b1 = Button(root, text="Add Vehicle",bg="black", fg="white", activeforeground="blue", activebackground="blue",command=open_rent_car, width=20, height=2)
 b1.pack(pady=18)
 
 b2 = Button(root, text="View Vehicles", bg="black", fg="white", command=view_vehicles, width=20, height=2)
@@ -248,7 +248,7 @@ b2 = Button(root, text="Return Vehicle", bg="black", fg="white", command=return_
 b2.pack(pady=18)
 
 
-b3 = Button(root, text="Exit", bg="black", fg="white", command=exit,width=18, height=2)
+b3 = Button(root, text="Exit", bg="red", fg="white", command=exit,width=18, height=2)
 b3.pack(pady=18)
 
 
