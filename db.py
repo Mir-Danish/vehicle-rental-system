@@ -21,39 +21,40 @@ root.geometry("500x500+300+300")
 
 
 '''print("connecting")
-connectdb = pymysql.connect(
-host="localhost",
-user="root",
-password="tiger123",
-database="student"
-)
-print("Connected")
 
-cursor = connectdb.cursor()
+def connect_to_database():
+    connectdb = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="tiger123",
+    database="student"
+    )
+    print("Connected")
 
-cursor.execute("show databases")
-for databases in cursor:
-    print(databases[0])
+    cursor = connectdb.cursor()
 
-print("Database are shown here")'''
+    cursor.execute("show databases")
+    for databases in cursor:
+        print(databases[0])
+
+    print("Database are shown here")'''
 
 
 def create_tables():
-    connect_db = connect_db()
-    cursor = connect_db.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS vehicles (
+    connect_db = connect_to_database().cursor()
+    connect_db.execute('''CREATE TABLE IF NOT EXISTS vehicles (
         vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
         type VARCHAR(50),
         model VARCHAR(100),
         rent_per_day FLOAT,
         available VARCHAR(10)
     )''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS customers (
+    connect_db.execute('''CREATE TABLE IF NOT EXISTS customers (
         customer_id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
         phone VARCHAR(20)
     )''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS rentals (
+    connect_db.execute('''CREATE TABLE IF NOT EXISTS rentals (
         rental_id INT AUTO_INCREMENT PRIMARY KEY,
         vehicle_id INT,
         customer_id INT,
@@ -92,10 +93,10 @@ def open_rent_car():
             messagebox.showerror("Error", "All fields are required")
             return
 
-        connecttodb = connect_db.cursor()
-        connecttodb.execute("INSERT INTO vehicles (type, model, rent_per_day, available) VALUES (%s, %s, %s, 'Yes')",(vtype, model, rent))
-        connecttodb.commit()
-        connecttodb.close()
+        run_query = connect_to_database().cursor()
+        run_query.execute("INSERT INTO vehicles (type, model, rent_per_day, available) VALUES (%s, %s, %s, 'Yes')",(vtype, model, rent))
+        run_query.commit()
+        run_query.close()
         
         messagebox.showinfo("Success", "Vehicle added successfully!", parent=form_window)
         form_window.destroy()
@@ -118,16 +119,14 @@ def view_vehicles():
         tree.column(col, width=100)
     tree.pack(fill=tk.BOTH, expand=True)
 
-
-
-
    
 
-    connecttodb = connect_db.cursor()
-    connecttodb.execute("SELECT * FROM vehicles")
-    for row in connecttodb.fetchall():
+    connecttodb = connect_to_database()
+    connectDB = connecttodb.cursor()
+    connectDB.execute("SELECT * FROM vehicles")
+    for row in connectDB.fetchall():
         tree.insert("",tk.END, values=row)
-    connecttodb.close()
+    connectDB.close()
 
     view_window.mainloop()
 
@@ -166,26 +165,26 @@ def rent_vehicle_window():
 
 
 
-        connecttodb = connect_db.cursor()
+        cursor = connect_to_database().cursor()
         # Check availability
-        connecttodb.execute("SELECT available FROM vehicles WHERE vehicle_id=%s", (vid,))
-        row = connecttodb.fetchone()
+        cursor.execute("SELECT available FROM vehicles WHERE vehicle_id=%s", (vid,))
+        row = cursor.fetchone()
         if not row:
             messagebox.showerror("Error", "Invalid vehicle ID.", parent=win)
-            connecttodb.close()
+            cursor.close()
             return
         if row[0] == 'No':
             messagebox.showwarning("Unavailable", "Vehicle already rented.", parent=win)
-            connecttodb.close()
+            cursor.close()
             return
         # Add customer rental info
-        connecttodb.execute("INSERT INTO customers (name, phone) VALUES (%s, %s)", (name, phone))
-        cid = connecttodb.lastrowid
-        connecttodb.execute("INSERT INTO rentals (vehicle_id, customer_id, rent_date, return_date) VALUES (%s, %s, %s, NULL)",
+        cursor.execute("INSERT INTO customers (name, phone) VALUES (%s, %s)", (name, phone))
+        cid = cursor.lastrowid
+        cursor.execute("INSERT INTO rentals (vehicle_id, customer_id, rent_date, return_date) VALUES (%s, %s, %s, NULL)",
                   (vid, cid, date.today()))
-        connecttodb.execute("UPDATE vehicles SET available='No' WHERE vehicle_id=%s", (vid,))
-        connecttodb.commit()
-        connecttodb.close()
+        cursor.execute("UPDATE vehicles SET available='No' WHERE vehicle_id=%s", (vid,))
+        cursor.commit()
+        cursor.close()
         messagebox.showinfo("Success", "Vehicle rented successfully!", parent=win)
         win.destroy()
 
@@ -209,7 +208,7 @@ def return_vehicle_window():
 
 
         #conn = connect_db()
-        connecttodb = connect_db.cursor()
+        connecttodb = connect_to_database().cursor()
         connecttodb.execute("SELECT vehicle_id FROM rentals WHERE rental_id=%s", (rid,))
         row = connecttodb.fetchone()
         if not row:
