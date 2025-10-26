@@ -1,10 +1,12 @@
 #import mysql.connector as sql
 #from mysql.connector import Error
 from nt import rename
+from textwrap import fill
 import pymysql
 from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 
 
 #root = Tk()
@@ -103,8 +105,127 @@ def open_rent_car():
 
 
     
-def fun():
-    messagebox.showinfo("Hello", "Red Button clicked")
+def view_vehicles():
+    view_window = tk.Toplevel(root)
+    view_window.title("View Vehicles")
+    view_window.geometry("400x400+300+300")
+
+    cols = ("ID", "Type", "Model", "Rent/Day", "Available")
+    tree = ttk.Treeview(view_window, columns=cols, show="headings")
+    
+    for col in cols:
+        tree.heading(col, text=col)
+        tree.column(col, width=100)
+    tree.pack(fill=tk.BOTH, expand=True)
+
+
+
+
+   
+
+    connecttodb = connectdb.cursor()
+    connecttodb.execute("SELECT * FROM vehicles")
+    for row in connecttodb.fetchall():
+        tree.insert("",tk.END, values=row)
+    connecttodb.close()
+
+    view_window.mainloop()
+
+
+
+
+#main window
+def rent_vehicle_window():
+    win = Toplevel()
+    win.title("Rent Vehicle")
+    win.geometry("400x400")
+
+    Label(win, text="Vehicle ID:").pack(pady=5)
+    vehicle_entry = Entry(win)
+    vehicle_entry.pack()
+
+    Label(win, text="Customer Name:").pack(pady=5)
+    name_entry = Entry(win)
+    name_entry.pack()
+
+    Label(win, text="Phone:").pack(pady=5)
+    phone_entry = Entry(win)
+    phone_entry.pack()
+
+
+
+
+    def rent_vehicle():
+        vid = vehicle_entry.get()
+        name = name_entry.get()
+        phone = phone_entry.get()
+        if not (vid and name and phone):
+            messagebox.showwarning("Input Error", "All fields required!", parent=win)
+            return
+     
+
+
+
+        connecttodb = connectdb.cursor()
+        # Check availability
+        connecttodb.execute("SELECT available FROM vehicles WHERE vehicle_id=%s", (vid,))
+        row = connecttodb.fetchone()
+        if not row:
+            messagebox.showerror("Error", "Invalid vehicle ID.", parent=win)
+            connecttodb.close()
+            return
+        if row[0] == 'No':
+            messagebox.showwarning("Unavailable", "Vehicle already rented.", parent=win)
+            connecttodb.close()
+            return
+        # Add customer rental info
+        connecttodb.execute("INSERT INTO customers (name, phone) VALUES (%s, %s)", (name, phone))
+        cid = connecttodb.lastrowid
+        connecttodb.execute("INSERT INTO rentals (vehicle_id, customer_id, rent_date, return_date) VALUES (%s, %s, %s, NULL)",
+                  (vid, cid, date.today()))
+        connecttodb.execute("UPDATE vehicles SET available='No' WHERE vehicle_id=%s", (vid,))
+        connecttodb.commit()
+        connecttodb.close()
+        messagebox.showinfo("Success", "Vehicle rented successfully!", parent=win)
+        win.destroy()
+
+    Button(win, text="Confirm Rent", command=rent_vehicle, bg="green", fg="white").pack(pady=15)
+   
+
+def return_vehicle_window():
+    win = Toplevel()
+    win.title("Return Vehicle")
+    win.geometry("400x200")
+
+    Label(win, text="Rental ID:").pack(pady=5)
+    rental_entry = Entry(win)
+    rental_entry.pack()
+
+    def return_vehicle():
+        rid = rental_entry.get()
+        if not rid:
+            messagebox.showwarning("Input Error", "Enter rental ID.", parent=win)
+            return
+
+
+        #conn = connect_db()
+        connecttodb = connectdb.cursor()
+        connecttodb.execute("SELECT vehicle_id FROM rentals WHERE rental_id=%s", (rid,))
+        row = connecttodb.fetchone()
+        if not row:
+            messagebox.showerror("Error", "Invalid rental ID.", parent=win)
+            connecttodb.close()
+            return
+        vid = row[0]
+        connecttodb.execute("UPDATE rentals SET return_date=%s WHERE rental_id=%s", (date.today(), rid))
+        connecttodb.execute("UPDATE vehicles SET available='Yes' WHERE vehicle_id=%s", (vid,))
+        connecttodb.commit()
+        connecttodb.close()
+        messagebox.showinfo("Success", "Vehicle returned successfully!", parent=win)
+        win.destroy()
+
+    Button(win, text="Return Vehicle", command=return_vehicle, bg="orange", fg="white").pack(pady=15)
+
 
 def exit():
     root.destroy()
@@ -119,11 +240,11 @@ w.pack(pady=20)
 b1 = Button(root, text="Add Vehicle",bg="red", fg="white", activeforeground="blue", activebackground="blue",command=open_rent_car, width=20, height=2)
 b1.pack(pady=18)
 
-b2 = Button(root, text="View Vehicles", bg="black", fg="white", command=fun, width=20, height=2)
+b2 = Button(root, text="View Vehicles", bg="black", fg="white", command=view_vehicles, width=20, height=2)
 b2.pack(pady=18)
-b2 = Button(root, text="Rent Vehicle", bg="black", fg="white", command=fun, width=20, height=2)
+b2 = Button(root, text="Rent Vehicle", bg="black", fg="white", command=rent_vehicle_window, width=20, height=2)
 b2.pack(pady=18)
-b2 = Button(root, text="Return Vehicle", bg="black", fg="white", command=fun, width=20, height=2)
+b2 = Button(root, text="Return Vehicle", bg="black", fg="white", command=return_vehicle_window, width=20, height=2)
 b2.pack(pady=18)
 
 
