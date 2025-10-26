@@ -110,6 +110,8 @@ def exit():
     root.destroy()
 
 
+
+#main code
 w = Label(root, text="Vehicle Rental System", font=("Arial",16,"bold"))
 w.pack(pady=20)
 
