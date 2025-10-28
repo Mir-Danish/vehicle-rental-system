@@ -177,7 +177,7 @@ def rent_vehicle_window():
             messagebox.showwarning("Unavailable", "Vehicle already rented.", parent=win)
             cursor.close()
             return
-        # Add customer rental info
+        # Add customer rental information
         cursor.execute("INSERT INTO customers (name, phone) VALUES (%s, %s)", (name, phone))
         cid = cursor.lastrowid
         cursor.execute("INSERT INTO rentals (vehicle_id, customer_id, rent_date, return_date) VALUES (%s, %s, %s, NULL)",
