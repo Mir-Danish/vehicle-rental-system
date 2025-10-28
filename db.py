@@ -163,8 +163,6 @@ def rent_vehicle_window():
             return
      
 
-
-
         cursor = connect_to_database().cursor()
         # Check availability
         cursor.execute("SELECT available FROM vehicles WHERE vehicle_id=%s", (vid,))
@@ -192,18 +190,18 @@ def rent_vehicle_window():
    
 
 def return_vehicle_window():
-    win = Toplevel()
-    win.title("Return Vehicle")
-    win.geometry("400x200")
+    return_window = Toplevel()
+    return_window.title("Return Vehicle")
+    return_window.geometry("400x200")
 
-    Label(win, text="Rental ID:").pack(pady=5)
-    rental_entry = Entry(win)
+    Label(return_window, text="Rental ID:").pack(pady=5)
+    rental_entry = Entry(return_window)
     rental_entry.pack()
 
     def return_vehicle():
         rid = rental_entry.get()
         if not rid:
-            messagebox.showwarning("Input Error", "Enter rental ID.", parent=win)
+            messagebox.showwarning("Input Error", "Enter rental ID.", parent=return_window)
             return
 
 
@@ -212,7 +210,7 @@ def return_vehicle_window():
         connecttodb.execute("SELECT vehicle_id FROM rentals WHERE rental_id=%s", (rid,))
         row = connecttodb.fetchone()
         if not row:
-            messagebox.showerror("Error", "Invalid rental ID.", parent=win)
+            messagebox.showerror("Error", "Invalid rental ID.", parent=return_window)
             connecttodb.close()
             return
         vid = row[0]
@@ -220,10 +218,10 @@ def return_vehicle_window():
         connecttodb.execute("UPDATE vehicles SET available='Yes' WHERE vehicle_id=%s", (vid,))
         connecttodb.commit()
         connecttodb.close()
-        messagebox.showinfo("Success", "Vehicle returned successfully!", parent=win)
-        win.destroy()
+        messagebox.showinfo("Success", "Vehicle returned successfully!", parent=return_window)
+        return_window.destroy()
 
-    Button(win, text="Return Vehicle", command=return_vehicle, bg="orange", fg="white").pack(pady=15)
+    Button(return_window, text="Return Vehicle", command=return_vehicle, bg="orange", fg="white").pack(pady=15)
 
 
 def exit():
