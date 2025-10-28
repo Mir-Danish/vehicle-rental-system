@@ -15,7 +15,7 @@ from tkinter import ttk
 
 root = Tk()
 root.title("Vehicle Rental System")
-root.geometry("500x500+300+300")
+root.geometry("700x700+300+300")
 
 
 
@@ -233,6 +233,8 @@ def exit():
 w = Label(root, text="Vehicle Rental System", font=("Arial",16,"bold"))
 w.pack(pady=20)
 
+photo =PhotoImage(file="P1.png")
+p = Button(root, text="click me", image=photo).pack(side="top")
 
 b1 = Button(root, text="Add Vehicle",bg="black", fg="white", activeforeground="blue", activebackground="blue",command=open_rent_car, width=20, height=2)
 b1.pack(pady=18)
@@ -247,11 +249,6 @@ b2.pack(pady=18)
 
 b3 = Button(root, text="Exit", bg="red", fg="white", command=exit,width=18, height=2)
 b3.pack(pady=18)
-
-
-
-
-
 
 
 
