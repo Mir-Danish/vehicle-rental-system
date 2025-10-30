@@ -8,11 +8,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-
-#root = Tk()
-#root.title("Car Rental Management System")
-#root.geometry("400x400+300+300")
-
 root = Tk()
 root.title("Vehicle Rental System")
 screen_width = root.winfo_screenwidth()
@@ -20,9 +15,7 @@ screen_height = root.winfo_screenheight()
 root.geometry(f"{screen_width}x{screen_height}+0+0")
 root.configure(bg="#E8F0FE")
 
-
 print("connecting")
-
 def connect_to_database():
     connectdb = pymysql.connect(
         host="localhost",
@@ -32,9 +25,7 @@ def connect_to_database():
     )
     print("Connected to database")
     return connectdb
-
 connectdb = connect_to_database()
-
 
 def create_tables():
     conn = connect_to_database()
@@ -62,29 +53,27 @@ def create_tables():
         FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
         )''')
     conn.commit()
-    # except Exception as e:
-    #     print(f"Error creating tables: {e}")
-    #     conn.rollback()
-    # finally:
     cursor.close()
     conn.close()
-
-
 
 def open_rent_car():
     form_window = tk.Toplevel(root)
     form_window.title("Rent A Car")
     form_window.geometry("800x400+300+300")
 
-    tk.Label(form_window, text="Vehicle Type:",).place(x=30,y=30)
-    name_entry = tk.Entry(form_window,width=30)
-    name_entry.place(x=130,y=30)
-    tk.Label(form_window, text="Model:").place(x=30,y=60)
-    model_entry = tk.Entry(form_window,width=30)
-    model_entry.place(x=130,y=60)
-    tk.Label(form_window, text="Rent Per Day:").place(x=30,y=90)
-    rent_entry = tk.Entry(form_window,width=30)
-    rent_entry.place(x=130,y=90)
+    center_frame = Frame(form_window)
+    center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+    tk.Label(center_frame, text="Vehicle Type:", font=("Segoe UI", 10)).grid(row=0, column=0, pady=10, padx=10, sticky=E)
+    name_entry = tk.Entry(center_frame, width=30, font=("Segoe UI", 10))
+    name_entry.grid(row=0, column=1, pady=10, padx=10)
+    tk.Label(center_frame, text="Model:", font=("Segoe UI", 10)).grid(row=1, column=0, pady=10, padx=10, sticky=E)
+    model_entry = tk.Entry(center_frame, width=30, font=("Segoe UI", 10))
+    model_entry.grid(row=1, column=1, pady=10, padx=10)
+    tk.Label(center_frame, text="Rent Per Day:", font=("Segoe UI", 10)).grid(row=2, column=0, pady=10, padx=10, sticky=E)
+    rent_entry = tk.Entry(center_frame, width=30, font=("Segoe UI", 10))
+    rent_entry.grid(row=2, column=1, pady=10, padx=10)
+    
     def save_Vehicle():
         vtype = name_entry.get()
         model = model_entry.get()
@@ -108,7 +97,7 @@ def open_rent_car():
                 cursor.close()
             if conn:
                 conn.close()
-    Button(form_window, text="Save Vehicle",command=save_Vehicle, bg="blue", fg="white").place(x=150,y=120)
+    Button(center_frame, text="Save Vehicle", command=save_Vehicle, bg="blue", fg="white", font=("Segoe UI", 10)).grid(row=3, column=0, columnspan=2, pady=20)
     print("Vehicle Added Successfully!")
 
 
@@ -177,31 +166,21 @@ def rent_vehicle_window():
     top.title("Rent Vehicle")
     top.geometry("500x450+400+200")
 
-    # Create center frame
     center_frame = Frame(top)
     center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
-
     Label(center_frame, text="Vehicle ID:", font=("Segoe UI", 10)).grid(row=0, column=0, pady=10, padx=10, sticky=E)
     vehicle_entry = Entry(center_frame, width=25, font=("Segoe UI", 10))
     vehicle_entry.grid(row=0, column=1, pady=10, padx=10)
-
     Label(center_frame, text="Customer Name:", font=("Segoe UI", 10)).grid(row=1, column=0, pady=10, padx=10, sticky=E)
     name_entry = Entry(center_frame, width=25, font=("Segoe UI", 10))
     name_entry.grid(row=1, column=1, pady=10, padx=10)
-
     Label(center_frame, text="Phone:", font=("Segoe UI", 10)).grid(row=2, column=0, pady=10, padx=10, sticky=E)
     phone_entry = Entry(center_frame, width=25, font=("Segoe UI", 10))
     phone_entry.grid(row=2, column=1, pady=10, padx=10)
-
-    # Additional Services Section
     Label(center_frame, text="Additional Services:", font=("Segoe UI", 10, "bold")).grid(row=3, column=0, columnspan=2, pady=(15, 5))
-    
-    # Create checkbox variables
     insurance_var = IntVar()
     gps_var = IntVar()
     child_seat_var = IntVar()
-    
-    # Checkboxes for additional services
     Checkbutton(center_frame, text="Insurance (+$10/day)", variable=insurance_var, font=("Segoe UI", 9)).grid(row=4, column=0, columnspan=2, sticky=W, padx=40)
     Checkbutton(center_frame, text="GPS Navigation (+$5/day)", variable=gps_var, font=("Segoe UI", 9)).grid(row=5, column=0, columnspan=2, sticky=W, padx=40)
     Checkbutton(center_frame, text="Child Seat (+$3/day)", variable=child_seat_var, font=("Segoe UI", 9)).grid(row=6, column=0, columnspan=2, sticky=W, padx=40)
@@ -324,11 +303,8 @@ def return_vehicle_window():
     return_window = Toplevel()
     return_window.title("Return Vehicle")
     return_window.geometry("500x300+400+250")
-
-    # Create center frame
     center_frame = Frame(return_window)
     center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
-
     Label(center_frame, text="Rental ID:", font=("Segoe UI", 12)).grid(row=0, column=0, pady=15, padx=15, sticky=E)
     rental_entry = Entry(center_frame, width=30, font=("Segoe UI", 12))
     rental_entry.grid(row=0, column=1, pady=15, padx=15)
@@ -338,7 +314,6 @@ def return_vehicle_window():
         if not rid:
             messagebox.showwarning("Input Error", "Please enter rental ID.", parent=return_window)
             return
-
         conn = None
         cursor = None
         try:
@@ -354,7 +329,6 @@ def return_vehicle_window():
             if not result:
                 messagebox.showerror("Error", "Invalid or already returned rental ID.", parent=return_window)
                 return
-                
             vehicle_id = result[0]
             cursor.execute("""
                 UPDATE rentals 
@@ -366,7 +340,6 @@ def return_vehicle_window():
                 SET available = 'Yes' 
                 WHERE vehicle_id = %s
             """, (vehicle_id,))
-            
             conn.commit()
             messagebox.showinfo("Success", "Vehicle returned successfully!", parent=return_window)
             return_window.destroy()
@@ -391,24 +364,24 @@ def exit():
 
 
 #main code
-
 photo =PhotoImage(file="p1 (2).png")
 p = Button(root, text="click me", image=photo).pack(pady=18)
 
 button_frame1 = Frame(root, bg="#E8F0FE")
 button_frame1.pack(pady=10)
-b1 = Button(button_frame1, text="Add Vehicle", font=("segeo",10,"bold"), 
-           bg="#2196F3", fg="white", activeforeground="white", 
-           activebackground="#1E88E5", command=open_rent_car, width=20, height=2)
+
+b1 = Button(button_frame1, text="Add Vehicle", font=("segeo",10,"bold"),bg="#2196F3", fg="white", activeforeground="white", 
+activebackground="#1E88E5", command=open_rent_car, width=20, height=2)
 b1.pack(side=LEFT, padx=20, pady=5)
-b2 = Button(button_frame1, text="View Vehicles", font=("segeo",10,"bold"), 
-           bg="#2196F3", fg="white", activeforeground="white",
-           activebackground="#1E88E5", command=view_vehicles, width=20, height=2)
+
+b2 = Button(button_frame1, text="View Vehicles", font=("segeo",10,"bold"),bg="#2196F3", fg="white", activeforeground="white",
+activebackground="#1E88E5", command=view_vehicles, width=20, height=2)
 b2.pack(side=LEFT, padx=20, pady=5)
+
 button_frame2 = Frame(root, bg="#E8F0FE")
 button_frame2.pack(pady=10)
-b3 = Button(button_frame2, text="Rent Vehicle", font=("segeo",10,"bold"),bg="#4CAF50", fg="white", activeforeground="white",
-           activebackground="#45a049", command=rent_vehicle_window, width=20, height=2)
+
+b3 = Button(button_frame2, text="Rent Vehicle", font=("segeo",10,"bold"),bg="#4CAF50", fg="white", activeforeground="white",activebackground="#45a049", command=rent_vehicle_window, width=20, height=2)
 b3.pack(side=LEFT, padx=20, pady=5)
 
 b_return = Button(button_frame2, text="Return Vehicle", font=("segeo",10,"bold"),
