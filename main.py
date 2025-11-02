@@ -70,7 +70,7 @@ def open_rent_car():
     tk.Label(center_frame, text="Model:", font=("Segoe UI", 10)).grid(row=1, column=0, pady=10, padx=10, sticky=E)
     model_entry = tk.Entry(center_frame, width=30, font=("Segoe UI", 10))
     model_entry.grid(row=1, column=1, pady=10, padx=10)
-    tk.Label(center_frame, text="Rent Per Day:", font=("Segoe UI", 10)).grid(row=2, column=0, pady=10, padx=10, sticky=E)
+    tk.Label(center_frame, text="Rent for Day:", font=("Segoe UI", 10)).grid(row=2, column=0, pady=10, padx=10, sticky=E)
     rent_entry = tk.Entry(center_frame, width=30, font=("Segoe UI", 10))
     rent_entry.grid(row=2, column=1, pady=10, padx=10)
     
@@ -181,9 +181,9 @@ def rent_vehicle_window():
     insurance_var = IntVar()
     gps_var = IntVar()
     child_seat_var = IntVar()
-    Checkbutton(center_frame, text="Insurance (+$10/day)", variable=insurance_var, font=("Segoe UI", 9)).grid(row=4, column=0, columnspan=2, sticky=W, padx=40)
-    Checkbutton(center_frame, text="GPS Navigation (+$5/day)", variable=gps_var, font=("Segoe UI", 9)).grid(row=5, column=0, columnspan=2, sticky=W, padx=40)
-    Checkbutton(center_frame, text="Child Seat (+$3/day)", variable=child_seat_var, font=("Segoe UI", 9)).grid(row=6, column=0, columnspan=2, sticky=W, padx=40)
+    Checkbutton(center_frame, text="Insurance (10/day)", variable=insurance_var, font=("Segoe UI", 9)).grid(row=4, column=0, columnspan=2, sticky=W, padx=40)
+    Checkbutton(center_frame, text="GPS Navigation (15/day)", variable=gps_var, font=("Segoe UI", 9)).grid(row=5, column=0, columnspan=2, sticky=W, padx=40)
+    Checkbutton(center_frame, text="Child Seat (13/day)", variable=child_seat_var, font=("Segoe UI", 9)).grid(row=6, column=0, columnspan=2, sticky=W, padx=40)
 
     def rent_vehicle():
         vid = vehicle_entry.get()
